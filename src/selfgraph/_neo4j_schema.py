@@ -201,6 +201,8 @@ def from_neo4j(data: Mapping[str, Any]) -> dict[str, Any]:
     pairs: dict[str, set[tuple[str, str]]] = {}
     for i, raw in enumerate(_items(data, "patterns", "neo4j ontology")):
         source, rel, target = _pattern(raw, f"patterns[{i}]")
+        for end in (source, target):
+            nodes.setdefault(end, {"label": end, "description": None, "aliases": [], "properties": []})
         rels.setdefault(rel, {"label": rel, "description": None, "aliases": [], "properties": []})
         froms, tos = ends.setdefault(rel, ([], []))
         froms.extend([source] if source not in froms else [])

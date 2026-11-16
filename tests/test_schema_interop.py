@@ -208,6 +208,21 @@ def test_invalid_neo4j_ontology_and_schema_objects_raise():
             Schema.from_neo4j_ontology(bad)
 
 
+def test_from_neo4j_ontology_accepts_pattern_endpoints_not_in_node_types():
+    data = {
+        "node_types": [{"label": "Person"}],
+        "relationship_types": [],
+        "patterns": [
+            ["Person", "WORKS_FOR", "Company"],
+            ["Company", "LOCATED_IN", "Country"],
+        ],
+        "constraints": [],
+    }
+    schema = Schema.from_neo4j_ontology(data)
+    assert {e.name for e in schema.entities} == {"Person", "Company", "Country"}
+    assert {r.type for r in schema.relations} == {"WORKS_FOR", "LOCATED_IN"}
+
+
 def test_cli_and_mcp_convert_schemas(capsys, tmp_path):
     g = fresh_graph("si")
     imported = cli(g, ["schema", "import", "--from", "neo4j", json_file(tmp_path, "neo.json", CANONICAL)], capsys)

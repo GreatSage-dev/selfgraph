@@ -216,4 +216,19 @@ describe("Neo4j graph schema interop", () => {
       { label: "Person", description: "", properties: [] },
     ]);
   });
+
+  it("accepts pattern endpoints not declared in node_types", () => {
+    const data = {
+      node_types: [{ label: "Person" }],
+      relationship_types: [],
+      patterns: [
+        ["Person", "WORKS_FOR", "Company"],
+        ["Company", "LOCATED_IN", "Country"],
+      ],
+      constraints: [],
+    };
+    const schema = fromNeo4jOntology(data);
+    expect(new Set(schema.entities.map((e) => e.name))).toEqual(new Set(["Person", "Company", "Country"]));
+    expect(new Set(schema.relations.map((r) => r.type))).toEqual(new Set(["WORKS_FOR", "LOCATED_IN"]));
+  });
 });

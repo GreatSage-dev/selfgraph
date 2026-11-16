@@ -204,6 +204,9 @@ export function fromNeo4jOntology(data: unknown): ParsedSchema {
   const pairs = new Map<string, Set<string>>();
   items(top, "patterns", "neo4j ontology").forEach((raw, i) => {
     const [source, rel, target] = pattern(raw, `patterns[${i}]`);
+    for (const end of [source, target]) {
+      if (!nodes.has(end)) nodes.set(end, { label: end, description: null, aliases: [], properties: [] });
+    }
     if (!rels.has(rel)) rels.set(rel, { label: rel, description: null, aliases: [], properties: [] });
     const [froms, tos] = ends.get(rel) ?? [[], []];
     if (!froms.includes(source)) froms.push(source);
